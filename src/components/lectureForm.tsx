@@ -1,4 +1,5 @@
-import { fetchTags, postLecture } from "@/api";
+import { postLecture } from "@/api/lectures-api";
+import { fetchTags } from "@/api/tags-api";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -11,14 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Textarea } from "./ui/textarea";
 
 const defaultValues: LectureFormValues = {
-  title: '',
-  lecturer: '',
-  description: '',
+  title: 'abc',
+  lecturer: 'abc',
+  description: 'abc',
   type: "ONLINE",
   endsAt: "",
   startsAt: "",
-  url: "",
-  address: "",
+  url: "https://localhost.com",
+  address: "asd",
   maximumCapacity: 0,
   tags: [],
 }

@@ -1,4 +1,4 @@
-import { login } from "@/api";
+import { login } from "@/api/login-api";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { LoginFormValues, loginSchema } from "@/utils/schemas/login-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { LoaderCircle } from 'lucide-react';
 import { useForm } from "react-hook-form";
 
 const defaultValues: LoginFormValues = {
@@ -85,7 +86,9 @@ const LoginForm = () => {
             type="submit"
             className='border border-primary rounded-none w-full'
             disabled={isPending}>
-            Login
+            {isPending ? <LoaderCircle className="h-4 w-4 animate-spin"/> : (
+              "Login"
+            )}
           </Button>
         </form>
       </Form>

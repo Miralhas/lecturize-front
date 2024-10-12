@@ -24,7 +24,7 @@ export const lectureSchema = z.object({
 
   address: z.string().optional(),
 
-  maximumCapacity: z.number().optional(),
+  maximumCapacity: z.number().optional().transform(val => val === 0 ? undefined : val),
 
   tags: z.array(z.object({
     id: z.number().int().positive({
@@ -34,9 +34,63 @@ export const lectureSchema = z.object({
 }).refine(data => new Date(data.endsAt) > new Date(data.startsAt), {
   message: "End date and time must be after the start date and time",
   path: ["endsAt"],
-}).refine(() => false, { // aparece message só quando retorna false
-  message: "maximum capacity is required",
-  path: ["maximumCapacity"],
+}).superRefine((val, ctx) => {
+  if (val.type === "HYBRID") {
+    const issues: z.IssueData[] = validateHybridType(val.url, val.address, val.maximumCapacity);
+    issues.forEach((issue) => ctx.addIssue(issue))
+  }
+
+  if (val.type === "ONLINE") {
+    val.maximumCapacity = undefined;
+    val.address = undefined;
+    const issues: z.IssueData[] = [];
+    validateOnlineType(val.url, issues);
+    issues.forEach((issue) => ctx.addIssue(issue))
+  }
+
+  if (val.type === "PRESENTIAL") {
+    val.url = undefined;
+    const issues: z.IssueData[] = [];
+    validatePresentialType(val.address, issues, val.maximumCapacity);
+    issues.forEach((issue) => ctx.addIssue(issue))
+  }
+
 })
+
+function validateOnlineType(url: string | undefined, issues: z.IssueData[]) {
+  if (url === "") {
+    issues.push({
+      code: z.ZodIssueCode.custom,
+      message: "URL is required",
+      path: ["url"]
+    });
+  }
+}
+
+function validatePresentialType(address: string | undefined, issues: z.IssueData[], maximumCapacity: number | undefined) {
+  if (!address) {
+    issues.push({
+      code: z.ZodIssueCode.custom,
+      message: "Address is required",
+      path: ["address"]
+    });
+  }
+  if (!maximumCapacity) {
+    issues.push({
+      code: z.ZodIssueCode.custom,
+      message: "Maximum capacity is required",
+      path: ["maximumCapacity"]
+    });
+  }
+}
+
+
+function validateHybridType(url: string | undefined, address: string | undefined, maximumCapacity: number | undefined) {
+  const issues: z.IssueData[] = [];
+  validateOnlineType(url, issues);
+  validatePresentialType(address, issues, maximumCapacity);
+  return issues;
+}
+
 
 export type LectureFormValues = z.infer<typeof lectureSchema>;
