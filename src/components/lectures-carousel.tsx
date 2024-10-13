@@ -1,4 +1,4 @@
-import { fetchLectures, Lecture } from "@/apis/lectures-api";
+import { Lecture } from "@/apis/lectures-api";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -17,18 +17,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useLectureContext } from "@/contexts/lectures-context";
+import { useEffect } from "react";
+import FallbackImage from "../../public/logo.svg";
 
-import { useQuery } from "@tanstack/react-query";
+const BASE_URL: string = import.meta.env.VITE_BASE_URL;
 
 type LecturesDialogProps = {
   lecture: Lecture
 }
 
 const LecturesCarousel = () => {
-  const { data: lectures, isLoading, refetch } = useQuery({
-    queryFn: fetchLectures,
-    queryKey: ["lectures"],
-  });
+  const { useLecturesQuery } = useLectureContext();
+  const { data: lectures, refetch } = useLecturesQuery();
+
+  useEffect(() => {
+    refetch();
+  }, [])
 
   return (
     <div className="flex justify-center">
@@ -40,7 +45,6 @@ const LecturesCarousel = () => {
                 <Card>
                   <CardContent className="flex aspect-square items-center justify-center p-6">
                     <LectureDialog lecture={lecture} />
-                    {/* <img src="/logo.svg" alt={lecture.title} className="max-w-full h-auto shadow-lg dark:shadow-black/30" /> */}
                   </CardContent>
                 </Card>
               </div>
@@ -55,10 +59,11 @@ const LecturesCarousel = () => {
 }
 
 const LectureDialog = ({ lecture }: LecturesDialogProps) => {
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <img src="/logo.svg" className="max-w-full h-auto shadow-lg dark:shadow-black/30 cursor-pointer" />
+        <img src={`${BASE_URL}/lectures/${lecture.id}/image`} onError={(e) => e.currentTarget.src = FallbackImage} className="max-w-full h-auto shadow-lg dark:shadow-black/30 cursor-pointer" />
       </DialogTrigger>
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>

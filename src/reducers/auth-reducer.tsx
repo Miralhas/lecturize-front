@@ -17,7 +17,7 @@ type LogoutAction = {
 export type AuthActions = LoginAction | LogoutAction;
 
 export const initialAuthReducerValues: AuthState = {
-  isAuthenticated: false,
+  isAuthenticated: Boolean(localStorage.getItem("accessToken")),
   user: null,
 };
 
@@ -29,7 +29,7 @@ export const authReducer = (state: AuthState, action: AuthActions): AuthState =>
     }
 
     case "logout": {
-      return {...initialAuthReducerValues}
+      return {isAuthenticated: false, user: null};
     }
   }
 };

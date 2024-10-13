@@ -1,11 +1,12 @@
-import { postLecture } from "@/apis/lectures-api";
 import { fetchTags } from "@/apis/tags-api";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useLectureContext } from "@/contexts/lectures-context";
+import { toast } from "@/hooks/use-toast";
 import { LectureFormValues, lectureSchema } from "@/utils/schemas/lecture-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -24,8 +25,14 @@ const defaultValues: LectureFormValues = {
   tags: [],
 }
 
-const LectureForm = () => {
-  const queryClient = useQueryClient();
+type LectureFormProps = {
+  handleTabChange: () => void;
+}
+
+const LectureForm = ({ handleTabChange }: LectureFormProps) => {
+  const { useLecturesMutation } = useLectureContext();
+  const { mutateAsync, isPending } = useLecturesMutation();
+
   const form = useForm<LectureFormValues>({
     resolver: zodResolver(lectureSchema),
     defaultValues,
@@ -37,14 +44,9 @@ const LectureForm = () => {
   const { data: tags, isLoading } = useQuery({
     queryFn: fetchTags,
     queryKey: ["tags"],
+    
   });
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: postLecture,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lectures"] });
-    }
-  });
 
   const onSubmit = async (data: LectureFormValues) => {
     const formattedData = {
@@ -52,15 +54,17 @@ const LectureForm = () => {
       startsAt: new Date(data.startsAt).toISOString(),
       endsAt: new Date(data.endsAt).toISOString(),
     }
-    try {
-      const lec = await mutateAsync(formattedData);
-      console.log(lec);
-    } catch (e) {
-      console.log(e);
-    }
+    const lecture = await mutateAsync(formattedData);
+    handleTabChange();
+    toast({
+      title: "You received the following token:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(lecture, null, 2)}</code>
+        </pre>
+      )
+    })
   }
-
-  if (isLoading) return (<h1 className="text-center text-green-600">Loading...</h1>)
 
   return (
     <div className="space-y-1">

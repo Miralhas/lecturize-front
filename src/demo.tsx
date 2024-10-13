@@ -87,7 +87,7 @@ const Demo = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                <LectureForm />
+                <LectureForm handleTabChange={() => handleTabChange("lectures")} />
               </CardContent>
             </Card>
           </TabsContent>
