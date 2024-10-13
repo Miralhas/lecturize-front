@@ -1,5 +1,5 @@
-import { postLecture } from "@/api/lectures-api";
-import { fetchTags } from "@/api/tags-api";
+import { postLecture } from "@/apis/lectures-api";
+import { fetchTags } from "@/apis/tags-api";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -129,7 +129,6 @@ const LectureForm = () => {
               control={form.control}
               name="endsAt"
               render={({ field }) => {
-                // console.log(field);
                 return (
                   <FormItem>
                     <FormLabel>Ends At</FormLabel>

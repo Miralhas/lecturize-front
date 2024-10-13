@@ -1,14 +1,13 @@
-import { fetchLectures, Lecture } from "@/api/lectures-api";
-import { Card, CardContent } from "@/components/ui/card"
+import { fetchLectures, Lecture } from "@/apis/lectures-api";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
+} from "@/components/ui/carousel";
 
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -17,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -40,7 +39,7 @@ const LecturesCarousel = () => {
               <div className="p-1">
                 <Card>
                   <CardContent className="flex aspect-square items-center justify-center p-6">
-                    <LectureDialog />
+                    <LectureDialog lecture={lecture} />
                     {/* <img src="/logo.svg" alt={lecture.title} className="max-w-full h-auto shadow-lg dark:shadow-black/30" /> */}
                   </CardContent>
                 </Card>
@@ -61,18 +60,18 @@ const LectureDialog = ({ lecture }: LecturesDialogProps) => {
       <DialogTrigger asChild>
         <img src="/logo.svg" className="max-w-full h-auto shadow-lg dark:shadow-black/30 cursor-pointer" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle>{lecture.title}</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            {lecture.description}
           </DialogDescription>
         </DialogHeader>
         
 
 
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          {/* <Button type="submit">Save changes</Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

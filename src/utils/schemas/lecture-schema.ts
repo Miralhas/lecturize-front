@@ -31,7 +31,8 @@ export const lectureSchema = z.object({
       message: "must be a positive integer",
     }),
   })).optional(),
-}).refine(data => new Date(data.endsAt) > new Date(data.startsAt), {
+})
+.refine(data => new Date(data.endsAt) > new Date(data.startsAt), {
   message: "End date and time must be after the start date and time",
   path: ["endsAt"],
 }).superRefine((val, ctx) => {

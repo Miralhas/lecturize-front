@@ -1,55 +1,60 @@
-import { login } from "@/api/login-api";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAuthContext } from "@/contexts/auth-context";
 import { toast } from "@/hooks/use-toast";
 import { LoginFormValues, loginSchema } from "@/utils/schemas/login-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { LoaderCircle } from 'lucide-react';
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 const defaultValues: LoginFormValues = {
-  email: "admin1@admin.com",
+  email: "admin@admin.com",
   password: "1234",
-  // email: "",
-  // password: "",
 };
 
 const LoginForm = () => {
+  const { loginMutation, loginUser } = useAuthContext();
+  const { error, isPending } = loginMutation;
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues,
     mode: "onSubmit"
   });
 
-  const { mutateAsync: mutateLoginAsync, isPending } = useMutation({
-    mutationFn: login,
-  });
-
-  const onSubmit = async (data: LoginFormValues) => {
-    try {
-      const response = await mutateLoginAsync(data);
+  useEffect(() => {
+    if (error) {
+      let detail = "Internal Server Error";
+      let title = "Something happened...";
+      if (axios.isAxiosError(error)) {
+        title = error.response?.data.title;
+        detail = JSON.stringify(error.response?.data, null, 2);
+      }
       toast({
-        title: "You received the following token:",
+        title: title,
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{response.accessToken?.slice(0, 40).concat("...")}</code>
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-hidden hover:overflow-auto">
+            <code className="text-white">{detail}</code>
           </pre>
         )
       })
-    } catch (err) {
-      if (axios.isAxiosError(err))
-        toast({
-          title: "You received the following token:",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-auto">
-              <code className="text-white w-[340px]">{JSON.stringify(err.response?.data, null, 2)}</code>
-            </pre>
-          )
-        })
+      
     }
+  }, [error])
+
+  const onSubmit = async (data: LoginFormValues) => {
+    const user = await loginUser(data);
+    toast({
+      title: "You received the following token:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(user, null, 2)}</code>
+        </pre>
+      )
+    })
   }
 
   return (
@@ -86,7 +91,7 @@ const LoginForm = () => {
             type="submit"
             className='border border-primary rounded-none w-full'
             disabled={isPending}>
-            {isPending ? <LoaderCircle className="h-4 w-4 animate-spin"/> : (
+            {isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : (
               "Login"
             )}
           </Button>
