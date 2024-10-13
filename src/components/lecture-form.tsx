@@ -1,4 +1,4 @@
-import { fetchTags } from "@/apis/tags-api";
+import { Tag } from "@/apis/tags-api";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -6,9 +6,10 @@ import { useLectureContext } from "@/contexts/lectures-context";
 import { toast } from "@/hooks/use-toast";
 import { LectureFormValues, lectureSchema } from "@/utils/schemas/lecture-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import TagsDrawer from "./tags-drawer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
@@ -30,6 +31,7 @@ type LectureFormProps = {
 }
 
 const LectureForm = ({ handleTabChange }: LectureFormProps) => {
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const { useLecturesMutation } = useLectureContext();
   const { mutateAsync, isPending } = useLecturesMutation();
 
@@ -41,18 +43,12 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
 
   const watchType = form.watch("type");
 
-  const { data: tags, isLoading } = useQuery({
-    queryFn: fetchTags,
-    queryKey: ["tags"],
-    
-  });
-
-
   const onSubmit = async (data: LectureFormValues) => {
     const formattedData = {
       ...data,
       startsAt: new Date(data.startsAt).toISOString(),
       endsAt: new Date(data.endsAt).toISOString(),
+      tags: selectedTags,
     }
     const lecture = await mutateAsync(formattedData);
     handleTabChange();
@@ -214,6 +210,10 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
               />
             </>
           )}
+
+          <div className="w-full mx-auto max-w-sm">
+            <TagsDrawer selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+          </div>
 
           <Button type="submit" disabled={isPending}>Submit</Button>
         </form>

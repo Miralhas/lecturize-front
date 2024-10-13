@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import { useLectureContext } from "@/contexts/lectures-context";
 import { useEffect } from "react";
-import FallbackImage from "../../public/logo.svg";
 
 const BASE_URL: string = import.meta.env.VITE_BASE_URL;
 
@@ -33,7 +32,7 @@ const LecturesCarousel = () => {
 
   useEffect(() => {
     refetch();
-  }, [])
+  }, [refetch])
 
   return (
     <div className="flex justify-center">
@@ -63,7 +62,7 @@ const LectureDialog = ({ lecture }: LecturesDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <img src={`${BASE_URL}/lectures/${lecture.id}/image`} onError={(e) => e.currentTarget.src = FallbackImage} className="max-w-full h-auto shadow-lg dark:shadow-black/30 cursor-pointer" />
+        <img src={`${BASE_URL}/lectures/${lecture.id}/image`} onError={(e) => e.currentTarget.src = "/logo.svg"} className="max-w-full h-auto shadow-lg dark:shadow-black/30 cursor-pointer" />
       </DialogTrigger>
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>

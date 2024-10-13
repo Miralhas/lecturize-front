@@ -29,7 +29,7 @@ const LoginForm = () => {
     if (error) {
       let detail = "Internal Server Error";
       let title = "Something happened...";
-      if (axios.isAxiosError(error)) {
+      if (axios.isAxiosError(error) && error.response) {
         title = error.response?.data.title;
         detail = JSON.stringify(error.response?.data, null, 2);
       }
@@ -43,7 +43,7 @@ const LoginForm = () => {
       })
       
     }
-  }, [error])
+  }, [error]);
 
   const onSubmit = async (data: LoginFormValues) => {
     const user = await loginUser(data);
