@@ -1,4 +1,4 @@
-import { LectureFormValues } from "@/utils/schemas/lecture-schema";
+import { LectureFormValues } from "@/lib/schemas/lecture-schema";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 

@@ -1,6 +1,6 @@
 import { fetchLectures, Lecture, postLecture } from "@/apis/lectures-api";
+import { LectureFormValues } from "@/lib/schemas/lecture-schema";
 import { initialLecturesReducerValue, LectureActions, lectureReducer, LectureState } from "@/reducers/lecture-reducer";
-import { LectureFormValues } from "@/utils/schemas/lecture-schema";
 import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { Dispatch, PropsWithChildren, useReducer } from "react";
 import { createContext } from "./create-context";

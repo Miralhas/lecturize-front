@@ -1,5 +1,3 @@
-import './App.css';
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Demo from './demo';
 import { ThemeProvider } from './components/theme-provider';

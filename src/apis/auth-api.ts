@@ -1,5 +1,5 @@
-import { LoginFormValues } from "@/utils/schemas/login-schema";
-import { RegisterFormValues } from "@/utils/schemas/register-schema";
+import { LoginFormValues } from "@/lib/schemas/login-schema";
+import { RegisterFormValues } from "@/lib/schemas/register-schema";
 
 import axios from 'axios';
 
