@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { useLectureContext } from "@/contexts/lectures-context";
 import { useEffect } from "react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 const BASE_URL: string = import.meta.env.VITE_BASE_URL;
 
@@ -62,18 +63,25 @@ const LectureDialog = ({ lecture }: LecturesDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <img src={`${BASE_URL}/lectures/${lecture.id}/image`} onError={(e) => e.currentTarget.src = "/logo.svg"} className="max-w-full h-auto shadow-lg dark:shadow-black/30 cursor-pointer" />
+        <img src={`${BASE_URL}/lectures/${lecture.id}/image`} onError={(e) => e.currentTarget.src = "/logo.svg"} className="w-full max-h-[230px] shadow-lg dark:shadow-black/30 cursor-pointer" />
       </DialogTrigger>
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>{lecture.title}</DialogTitle>
           <DialogDescription>
-            {lecture.description}
           </DialogDescription>
         </DialogHeader>
-        
-
-
+          <div className="grid grid-cols-2 md:gap-10 max-h-[340px]">
+            <pre className="mt-2 md:w-[370px] rounded-md bg-slate-950 p-4 overflow-hidden">
+              <ScrollArea className="h-72">
+                <code className="text-white text-sm">{JSON.stringify(lecture, null, 2)}</code>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </pre>
+            <div className="max-h-[340px]">
+              <img src={`${BASE_URL}/lectures/${lecture.id}/image`} onError={(e) => e.currentTarget.src = "/logo.svg"} className="w-full h-full max-h-full shadow-lg dark:shadow-black/30" />
+            </div>
+          </div>
         <DialogFooter>
           {/* <Button type="submit">Save changes</Button> */}
         </DialogFooter>
