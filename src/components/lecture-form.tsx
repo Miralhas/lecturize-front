@@ -1,8 +1,8 @@
-import { Tag } from "@/apis/tags-api";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useLectureContext } from "@/contexts/lectures-context";
+import { Tag } from "@/lib/apis/tags-api";
 import { toast } from "@/lib/hooks/use-toast";
 import { LectureFormValues, lectureSchema } from "@/lib/schemas/lecture-schema";
 import { zodResolver } from "@hookform/resolvers/zod";

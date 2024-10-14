@@ -17,10 +17,11 @@ import LoginForm from "./components/login-form";
 import { useEffect, useState } from "react";
 import { useAuthContext } from "./contexts/auth-context";
 import RegisterForm from "./components/register-form";
+import UserDropdownMenu from "./components/user-dropdown-menu";
+import { ModeToggle } from "./components/toggle";
 
 const Demo = () => {
-  const { state } = useAuthContext();
-  const { isAuthenticated } = state;
+  const { state: { isAuthenticated, user } } = useAuthContext();
   const [tab, setTab] = useState(isAuthenticated ? "lectures" : "login");
 
   useEffect(() => {
@@ -33,8 +34,16 @@ const Demo = () => {
 
   return (
     <main className='min-h-[80vh]'>
-      <section className='mx-auto mt-10 max-w-xl'>
-        <h1 className="text-center text-primary text-2xl mb-4">Lecturize it</h1>
+      <section className='mx-auto max-w-xl flex flex-col gap-5 mt-7 p-5'>
+        <div className="flex flex-row justify-center gap-4 items-center">
+          <h1 className="text-center text-primary text-2xl">Lecturize it</h1>
+          <ModeToggle />
+        </div>
+        {isAuthenticated && user && (
+          <div className="flex justify-center">
+            <UserDropdownMenu />
+          </div>
+        )}
         <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-2">
             {isAuthenticated ? (
@@ -103,7 +112,7 @@ const Demo = () => {
             </Card>
           </TabsContent>
         </Tabs>
-        </section>
+      </section>
     </main>
   );
 }

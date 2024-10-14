@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Demo from './demo';
 import { ThemeProvider } from './components/theme-provider';
-import { ModeToggle } from './components/toggle';
 import { Toaster } from './components/ui/toaster';
 import { AuthProvider } from './contexts/auth-context';
 import { LectureProvider } from './contexts/lectures-context';
@@ -15,7 +14,6 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <LectureProvider>
-            <ModeToggle />
             <Demo />
             <Toaster />
           </LectureProvider>

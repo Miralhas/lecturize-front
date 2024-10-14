@@ -1,4 +1,4 @@
-import { Lecture } from "@/apis/lectures-api"
+import { Lecture } from "@/lib/apis/lectures-api";
 
 export type LectureState = {
   lectures: Lecture[] | null;

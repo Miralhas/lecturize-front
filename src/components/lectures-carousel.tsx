@@ -1,25 +1,25 @@
-import { Lecture } from "@/apis/lectures-api";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Lecture } from "@/lib/apis/lectures-api";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useLectureContext } from "@/contexts/lectures-context";
 import { useEffect } from "react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 const BASE_URL: string = import.meta.env.VITE_BASE_URL;
 

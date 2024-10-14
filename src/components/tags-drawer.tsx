@@ -1,17 +1,17 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Dispatch, SetStateAction, useState } from "react";
+import { fetchTags, Tag } from "@/lib/apis/tags-api";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTags, Tag } from "@/apis/tags-api";
+import { Dispatch, SetStateAction, useState } from "react";
 
 type TagsDrawerProps = {
   selectedTags: Tag[];

@@ -1,4 +1,4 @@
-import { fetchLectures, Lecture, postLecture } from "@/apis/lectures-api";
+import { fetchLectures, Lecture, postLecture } from "@/lib/apis/lectures-api";
 import { LectureFormValues } from "@/lib/schemas/lecture-schema";
 import { initialLecturesReducerValue, LectureActions, lectureReducer, LectureState } from "@/reducers/lecture-reducer";
 import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";

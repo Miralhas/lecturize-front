@@ -1,4 +1,4 @@
-import { fetchUser, login, LoginResponse, register, User } from "@/apis/auth-api";
+import { fetchUser, login, LoginResponse, register, User } from "@/lib/apis/auth-api";
 import { LoginFormValues } from "@/lib/schemas/login-schema";
 import { RegisterFormValues } from "@/lib/schemas/register-schema";
 import { AuthActions, authReducer, AuthState, initialAuthReducerValues } from "@/reducers/auth-reducer";
@@ -16,6 +16,7 @@ type AuthContextState = {
   loginMutation: LoginMutation;
   registerMutation: RegisterMutation;
   registerUser: (data: RegisterFormValues) => Promise<User>;
+  logout: () => Promise<void>;
 }
 
 const { useContext, ContextProvider } = createContext<AuthContextState>();
@@ -61,8 +62,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     return user;
   };
 
+  const logout = async () => {
+    localStorage.removeItem("accessToken");
+    dispatch({type: "logout"});
+  }
+
   return (
-    <ContextProvider value={{ dispatch, state, loginMutation, loginUser, registerMutation, registerUser }}>
+    <ContextProvider value={{ dispatch, state, loginMutation, loginUser, registerMutation, registerUser, logout }}>
       {children}
     </ContextProvider>
   )

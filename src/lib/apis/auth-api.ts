@@ -33,3 +33,4 @@ export const fetchUser = async (accessToken: string): Promise<User> => {
   });
   return result.data;
 }
+
