@@ -11,18 +11,15 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { useEffect, useState } from "react";
 import LectureForm from "./components/lecture-form";
 import LecturesCarousel from "./components/lectures-carousel";
 import LoginForm from "./components/login-form";
-import { useEffect, useState } from "react";
-import { useAuthContext } from "./contexts/auth-context";
 import RegisterForm from "./components/register-form";
-import UserDropdownMenu from "./components/user-dropdown-menu";
-import { ModeToggle } from "./components/toggle";
-import DashboardDialog from "./components/dashboard-dialog";
+import { useAuthContext } from "./contexts/auth-context";
 
 const Demo = () => {
-  const { state: { isAuthenticated, user } } = useAuthContext();
+  const { state: { isAuthenticated } } = useAuthContext();
   const [tab, setTab] = useState(isAuthenticated ? "lectures" : "login");
 
   useEffect(() => {
@@ -35,17 +32,10 @@ const Demo = () => {
 
   return (
     <main className='min-h-[80vh]'>
-      <section className='mx-auto max-w-xl flex flex-col gap-5 mt-7 p-5'>
+      <section className='mx-auto max-w-xl flex flex-col gap-5 mt-7'>
         <div className="flex flex-row justify-center gap-4 items-center">
           <h1 className="text-center text-primary text-2xl">Lecturize it</h1>
-          <ModeToggle />
         </div>
-        {isAuthenticated && user && (
-          <div className="flex justify-center gap-3">
-            <UserDropdownMenu />
-            <DashboardDialog />
-          </div>
-        )}
         <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-2">
             {isAuthenticated ? (

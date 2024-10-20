@@ -23,8 +23,8 @@ const viewsChartConfig: ChartConfig = {
 };
 
 const sharingChartConfig: ChartConfig = {
-  shared: {
-    label: "Sharing",
+  shares: {
+    label: "Shares",
     icon: SquareArrowOutUpRight,
   }
 }
@@ -35,7 +35,7 @@ const DashboardDialog = () => {
   if (currentChart === ChartType.mostShared) {
     return (
       <DashboardLayout currentChart={currentChart} setCurrentChart={setCurrentChart}>
-        <LecturesBarChart data={chartSharedData} barDataKey="sharing" xAxisDataKey="name" hexColors={randomHexColors} chartConfig={sharingChartConfig} />
+        <LecturesBarChart data={chartSharedData} barDataKey="shares" xAxisDataKey="name" hexColors={randomHexColors} chartConfig={sharingChartConfig} />
       </DashboardLayout>
     )
   }
@@ -49,9 +49,10 @@ const DashboardDialog = () => {
 
 const DashboardLayout = ({ children, currentChart, setCurrentChart }: PropsWithChildren<DashboardLayoutProps>) => {
   return (
-    <Dialog>
+    <div className="w-full">
+      <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="w-full">
           Dashboard
         </Button>
       </DialogTrigger>
@@ -85,8 +86,8 @@ const DashboardLayout = ({ children, currentChart, setCurrentChart }: PropsWithC
         </div>
         {children}
       </DialogContent>
-
     </Dialog>
+    </div>
   )
 }
 

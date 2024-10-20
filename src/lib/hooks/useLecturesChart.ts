@@ -14,8 +14,8 @@ export const useLecturesChart = () => {
 
   const chartSharedData = useMemo(() => (lecturesQuery.data?.map((lecture) => ({
     name: lecture.title,
-    sharing: lecture.metrics.timesShared,
-  })).sort((a, b) => a.sharing - b.sharing) ?? []), [lecturesQuery.data]);
+    shares: lecture.metrics.timesShared,
+  })).sort((a, b) => a.shares - b.shares) ?? []), [lecturesQuery.data]);
 
   const randomHexColors = generateRandomHexColors(lecturesQuery.data?.length ?? 0);
   
