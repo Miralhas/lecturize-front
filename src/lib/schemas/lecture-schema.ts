@@ -1,6 +1,9 @@
 import { isAfter } from "date-fns";
 import { z } from "zod";
 
+const ACCEPTED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp"];
+const MB_BYTES = 1_000_000;
+
 const TypeEnum = z.enum(['PRESENTIAL', 'HYBRID', 'ONLINE']);
 
 export const lectureSchema = z.object({
@@ -31,6 +34,24 @@ export const lectureSchema = z.object({
       message: "must be a positive integer",
     }),
   })).optional(),
+
+  image: z.instanceof(File).optional().superRefine((file, ctx) => {
+    if (!file) return;
+
+    if (!ACCEPTED_MIME_TYPES.includes(file.type)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Image must be one of [${ACCEPTED_MIME_TYPES.join(", ")}] accepted types, but it was ${file.type}`,
+      });
+    }
+
+    if (file.size >= MB_BYTES) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Image size must not be larger than ${MB_BYTES / MB_BYTES} MB`,
+      });
+    }
+  })
 })
 .refine(data => new Date(data.endsAt) > new Date(data.startsAt), {
   message: "End date and time must be after the start date and time",
@@ -92,6 +113,5 @@ function validateHybridType(url: string | undefined, address: string | undefined
   validatePresentialType(address, issues, maximumCapacity);
   return issues;
 }
-
 
 export type LectureFormValues = z.infer<typeof lectureSchema>;

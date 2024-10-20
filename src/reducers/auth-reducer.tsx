@@ -1,4 +1,4 @@
-import { User } from "@/lib/apis/auth-api";
+import { User } from "@/types/auth";
 
 export type AuthState = {
   isAuthenticated: boolean;

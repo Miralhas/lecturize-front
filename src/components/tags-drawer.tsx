@@ -9,7 +9,8 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer";
-import { fetchTags, Tag } from "@/lib/apis/tags-api";
+import { fetchTags } from "@/lib/apis/tags-api";
+import { Tag } from "@/types/tag";
 import { useQuery } from "@tanstack/react-query";
 import { Dispatch, SetStateAction, useState } from "react";
 
@@ -21,7 +22,7 @@ type TagsDrawerProps = {
 const TagsDrawer = ({ selectedTags, setSelectedTags }: TagsDrawerProps) => {
   const [showMore, setShowMore] = useState<boolean>(false);
   
-  const { data: tags, isLoading } = useQuery({
+  const { data: tags } = useQuery({
     queryFn: fetchTags,
     queryKey: ["tags"],
   });

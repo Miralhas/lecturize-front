@@ -1,10 +1,11 @@
-import { fetchUser, login, LoginResponse, register, User } from "@/lib/apis/auth-api";
+import { fetchUser, login, register, } from "@/lib/apis/auth-api";
 import { LoginFormValues } from "@/lib/schemas/login-schema";
 import { RegisterFormValues } from "@/lib/schemas/register-schema";
 import { AuthActions, authReducer, AuthState, initialAuthReducerValues } from "@/reducers/auth-reducer";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { Dispatch, PropsWithChildren, useEffect, useReducer } from "react";
 import { createContext } from "./create-context";
+import { LoginResponse, User } from "@/types/auth";
 
 type LoginMutation = UseMutationResult<LoginResponse, Error, LoginFormValues, unknown>;
 type RegisterMutation = UseMutationResult<User, Error, RegisterFormValues, unknown>

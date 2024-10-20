@@ -3,7 +3,6 @@ import Demo from './demo';
 import { ThemeProvider } from './components/theme-provider';
 import { Toaster } from './components/ui/toaster';
 import { AuthProvider } from './contexts/auth-context';
-import { LectureProvider } from './contexts/lectures-context';
 
 const queryClient = new QueryClient();
 
@@ -13,10 +12,8 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <LectureProvider>
-            <Demo />
-            <Toaster />
-          </LectureProvider>
+          <Demo />
+          <Toaster />
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>

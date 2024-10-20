@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useLectureContext } from "@/contexts/lectures-context";
-import { Tag } from "@/lib/apis/tags-api";
+import { useLectureImageMutation, useLecturesMutation } from "@/lib/mutations";
 import { toast } from "@/lib/hooks/use-toast";
 import { LectureFormValues, lectureSchema } from "@/lib/schemas/lecture-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +11,7 @@ import { useForm } from "react-hook-form";
 import TagsDrawer from "./tags-drawer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
+import { Tag } from "@/types/tag";
 
 const defaultValues: LectureFormValues = {
   title: 'abc',
@@ -32,8 +32,8 @@ type LectureFormProps = {
 
 const LectureForm = ({ handleTabChange }: LectureFormProps) => {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-  const { useLecturesMutation } = useLectureContext();
-  const { mutateAsync, isPending } = useLecturesMutation();
+  const lectureMutate = useLecturesMutation();
+  const lectureImageMutation = useLectureImageMutation();
 
   const form = useForm<LectureFormValues>({
     resolver: zodResolver(lectureSchema),
@@ -44,22 +44,30 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
   const watchType = form.watch("type");
 
   const onSubmit = async (data: LectureFormValues) => {
+    const image = data.image;
     const formattedData = {
       ...data,
       startsAt: new Date(data.startsAt).toISOString(),
       endsAt: new Date(data.endsAt).toISOString(),
       tags: selectedTags,
-    }
-    const lecture = await mutateAsync(formattedData);
-    handleTabChange();
-    toast({
-      title: "You received the following token:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(lecture, null, 2)}</code>
-        </pre>
-      )
-    })
+      image: undefined
+    };
+    lectureMutate.mutate(formattedData, {
+      onSuccess: async (lecture) => {
+        if (image) {
+          lectureImageMutation.mutate({ file: image, id: lecture.id });
+        }
+        handleTabChange();
+        toast({
+          title: "You received the following token:",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+              <code className="text-white">{JSON.stringify(lecture, null, 2)}</code>
+            </pre>
+          )
+        })
+      }
+    });
   }
 
   return (
@@ -180,7 +188,7 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
             )}
           />}
 
-          {(watchType == "PRESENTIAL" || watchType == "HYBRID") &&(
+          {(watchType == "PRESENTIAL" || watchType == "HYBRID") && (
             <>
               <FormField
                 control={form.control}
@@ -211,11 +219,35 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
             </>
           )}
 
+          <div>
+            <FormField
+              control={form.control}
+              name="image"
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              render={({ field: { value, onChange, ...fieldProps } }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Image</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="pt-2"
+                        type="file" {...fieldProps}
+                        accept="image/png, image/jpeg, image/webp"
+                        onChange={(e) => onChange(e.target.files && e.target.files[0])}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
+            />
+          </div>
+
           <div className="w-full mx-auto max-w-sm">
             <TagsDrawer selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
           </div>
+          <Button type="submit" disabled={lectureMutate.isPending}>Submit</Button>
 
-          <Button type="submit" disabled={isPending}>Submit</Button>
         </form>
       </Form>
     </div>

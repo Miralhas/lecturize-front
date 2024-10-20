@@ -19,6 +19,7 @@ import { useAuthContext } from "./contexts/auth-context";
 import RegisterForm from "./components/register-form";
 import UserDropdownMenu from "./components/user-dropdown-menu";
 import { ModeToggle } from "./components/toggle";
+import DashboardDialog from "./components/dashboard-dialog";
 
 const Demo = () => {
   const { state: { isAuthenticated, user } } = useAuthContext();
@@ -40,8 +41,9 @@ const Demo = () => {
           <ModeToggle />
         </div>
         {isAuthenticated && user && (
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-3">
             <UserDropdownMenu />
+            <DashboardDialog />
           </div>
         )}
         <Tabs value={tab} onValueChange={handleTabChange}>

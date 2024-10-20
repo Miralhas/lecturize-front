@@ -1,25 +1,25 @@
 import { Card, CardContent } from "@/components/ui/card";
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Lecture } from "@/lib/apis/lectures-api";
 
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useLectureContext } from "@/contexts/lectures-context";
-import { useEffect } from "react";
+import { useLecturesQuery } from "@/lib/queries";
+import { Lecture } from "@/types/lecture";
+import Spinner from "./spinner";
 
 const BASE_URL: string = import.meta.env.VITE_BASE_URL;
 
@@ -28,12 +28,7 @@ type LecturesDialogProps = {
 }
 
 const LecturesCarousel = () => {
-  const { useLecturesQuery } = useLectureContext();
-  const { data: lectures, refetch } = useLecturesQuery();
-
-  useEffect(() => {
-    refetch();
-  }, [refetch])
+  const { data: lectures } = useLecturesQuery();
 
   return (
     <div className="flex justify-center">
@@ -59,7 +54,7 @@ const LecturesCarousel = () => {
 }
 
 const LectureDialog = ({ lecture }: LecturesDialogProps) => {
-  
+  lecture.imageUrl = `${BASE_URL}/lectures/${lecture.id}/image`;
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -79,7 +74,7 @@ const LectureDialog = ({ lecture }: LecturesDialogProps) => {
               </ScrollArea>
             </pre>
             <div className="max-h-[340px]">
-              <img src={`${BASE_URL}/lectures/${lecture.id}/image`} onError={(e) => e.currentTarget.src = "/logo.svg"} className="w-full h-full max-h-full shadow-lg dark:shadow-black/30" />
+              <img src={lecture.imageUrl} onLoad={() => <Spinner />} onError={(e) => e.currentTarget.src = "/logo.svg"} className="w-full h-full max-h-full shadow-lg dark:shadow-black/30" />
             </div>
           </div>
         <DialogFooter>

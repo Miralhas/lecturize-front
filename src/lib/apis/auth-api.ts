@@ -1,21 +1,10 @@
 import { LoginFormValues } from "@/lib/schemas/login-schema";
 import { RegisterFormValues } from "@/lib/schemas/register-schema";
+import { LoginResponse, User } from "@/types/auth";
 
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-
-export type User = {
-  id: number;
-  username: string;
-  email: string;
-  roles: string[];
-}
-
-export type LoginResponse = {
-  accessToken: string;
-  expiresIn: number
-}
 
 export const login = async (loginBody: LoginFormValues): Promise<LoginResponse> => {
   const result = await axios.post(`${BASE_URL}/auth/login`, loginBody);
