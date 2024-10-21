@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuthContext } from "@/contexts/auth-context";
-import { toast } from "@/lib/hooks/use-toast";
+import { useLoginMutation } from "@/lib/mutations";
 import { LoginFormValues, loginSchema } from "@/lib/schemas/login-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import { isAxiosError } from "axios";
 import { LoaderCircle } from 'lucide-react';
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const defaultValues: LoginFormValues = {
   email: "admin@admin.com",
@@ -16,51 +16,39 @@ const defaultValues: LoginFormValues = {
 };
 
 const LoginForm = () => {
-  const { loginMutation, loginUser } = useAuthContext();
-  const { error, isPending } = loginMutation;
+  const { loginUser } = useAuthContext();
+  const loginMutation = useLoginMutation();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues,
     mode: "onSubmit"
   });
+  const { errors } = form.formState;
 
-  useEffect(() => {
-    if (error) {
-      let detail = "Internal Server Error";
-      let title = "Something happened...";
-      if (axios.isAxiosError(error) && error.response) {
-        title = error.response?.data.title;
-        detail = JSON.stringify(error.response?.data, null, 2);
-      }
-      toast({
-        title: title,
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-hidden hover:overflow-auto">
-            <code className="text-white">{detail}</code>
-          </pre>
-        )
-      })
-      
-    }
-  }, [error]);
 
-  const onSubmit = async (data: LoginFormValues) => {
-    const user = await loginUser(data);
-    toast({
-      title: "You received the following token:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(user, null, 2)}</code>
-        </pre>
-      )
-    })
+  const onSubmit = (data: LoginFormValues) => {
+    loginMutation.mutate(data, {
+      onSuccess: async ({ accessToken }) => {
+        const user = await loginUser(accessToken);
+        toast.success(`User ${user.username} logged in successfully...`);
+      },
+      onError(error) {
+        if (isAxiosError(error)) {
+          const serverError = error.response?.data;
+          form.setError("root", {message: serverError.detail})
+        }
+      },
+    });
   }
 
   return (
     <div className="space-y-1">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          {errors.root && (
+            <FormMessage className="text-sm"> {errors.root.message} </FormMessage>
+          )}
           <FormField
             control={form.control}
             name="email"
@@ -90,8 +78,8 @@ const LoginForm = () => {
           <Button
             type="submit"
             className='border border-primary rounded-none w-full'
-            disabled={isPending}>
-            {isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : (
+            disabled={loginMutation.isPending}>
+            {loginMutation.isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : (
               "Login"
             )}
           </Button>

@@ -31,11 +31,9 @@ const Demo = () => {
   }
 
   return (
-    <main className='min-h-[80vh]'>
-      <section className='mx-auto max-w-xl flex flex-col gap-5 mt-7'>
-        <div className="flex flex-row justify-center gap-4 items-center">
-          <h1 className="text-center text-primary text-2xl">Lecturize it</h1>
-        </div>
+    <main className='col-span-1'>
+      <section>
+        <h1 className="text-center text-primary text-2xl mb-5">Lecturize it</h1>
         <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-2">
             {isAuthenticated ? (
@@ -56,7 +54,7 @@ const Demo = () => {
               <CardHeader>
                 <CardTitle>Login</CardTitle>
                 <CardDescription>
-                  Make changes to your account here. Click save when you're done.
+                  Log in to your account here. Click save when you're done.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -70,7 +68,7 @@ const Demo = () => {
               <CardHeader>
                 <CardTitle>Register</CardTitle>
                 <CardDescription>
-                  Make changes to your account here. Click save when you're done.
+                  Register your account here. Click save when you're done.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -82,9 +80,9 @@ const Demo = () => {
           <TabsContent value="create-lecture">
             <Card>
               <CardHeader>
-                <CardTitle>Password</CardTitle>
+                <CardTitle>Create Lecture</CardTitle>
                 <CardDescription>
-                  Change your password here. After saving, you'll be logged out.
+                  Create a lecture here. Click save when you're done.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">

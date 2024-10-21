@@ -1,22 +1,13 @@
-import { fetchUser, login, register, } from "@/lib/apis/auth-api";
-import { LoginFormValues } from "@/lib/schemas/login-schema";
-import { RegisterFormValues } from "@/lib/schemas/register-schema";
+import { fetchUser } from "@/lib/apis/auth-api";
 import { AuthActions, authReducer, AuthState, initialAuthReducerValues } from "@/reducers/auth-reducer";
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import { User } from "@/types/auth";
 import { Dispatch, PropsWithChildren, useEffect, useReducer } from "react";
 import { createContext } from "./create-context";
-import { LoginResponse, User } from "@/types/auth";
-
-type LoginMutation = UseMutationResult<LoginResponse, Error, LoginFormValues, unknown>;
-type RegisterMutation = UseMutationResult<User, Error, RegisterFormValues, unknown>
 
 type AuthContextState = {
   dispatch: Dispatch<AuthActions>;
   state: AuthState;
-  loginUser: (data: LoginFormValues) => Promise<User>;
-  loginMutation: LoginMutation;
-  registerMutation: RegisterMutation;
-  registerUser: (data: RegisterFormValues) => Promise<User>;
+  loginUser: (accessToken: string) => Promise<User>;
   logout: () => Promise<void>;
 }
 
@@ -24,14 +15,6 @@ const { useContext, ContextProvider } = createContext<AuthContextState>();
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthReducerValues);
-  
-  const loginMutation = useMutation({
-    mutationFn: login,
-  });
-
-  const registerMutation = useMutation({
-    mutationFn: register,
-  });
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -47,19 +30,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
 
     if (accessToken) verifyAccessToken(accessToken);
-  }, [])
+  }, []);
 
-  const loginUser = async (data: LoginFormValues): Promise<User> => {
-    const response = await loginMutation.mutateAsync(data);
-    const user = await fetchUser(response.accessToken);
+  const loginUser = async (accessToken: string): Promise<User> => {
+    const user = await fetchUser(accessToken);
     dispatch({type: "login", payload: {user}});
-    localStorage.setItem("accessToken", response.accessToken);
-    return user;
-  };
-
-  const registerUser = async (data: RegisterFormValues): Promise<User> => {
-    const user = await registerMutation.mutateAsync(data);
-    await loginUser({email: user.email, password: data.password});
+    localStorage.setItem("accessToken", accessToken);
     return user;
   };
 
@@ -69,7 +45,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <ContextProvider value={{ dispatch, state, loginMutation, loginUser, registerMutation, registerUser, logout }}>
+    <ContextProvider value={{ dispatch, state, loginUser, logout }}>
       {children}
     </ContextProvider>
   )

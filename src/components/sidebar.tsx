@@ -12,29 +12,34 @@ import { ModeToggle } from "./toggle";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import UserDropdownMenu from "./user-dropdown-menu";
+import { useMediaQuery } from "usehooks-ts";
+
 
 const Sidebar = () => {
+  const isDesktop = useMediaQuery("(min-width: 1025px)");
   return (
     <div className="max-w-[275px] dark:bg-neutral-950">
-      <div className="hidden xl:block w-full">
-        <SidebarContent />
-      </div>
-      <div className="block xl:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button size="icon" variant="ghost">
-              <SidebarIcon className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left">
-            <SheetHeader className="pb-3">
-              <SheetTitle>Lecturize It</SheetTitle>
-            </SheetHeader>
-            <SidebarContent />
-          </SheetContent>
-        </Sheet>
-      </div>
-
+      {isDesktop ? (
+        <div className="w-full">
+          <SidebarContent />
+        </div>
+      ) : (
+        <div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button size="icon" variant="ghost">
+                <SidebarIcon className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="max-w-[300px]">
+              <SheetHeader className="pb-3">
+                <SheetTitle>Lecturize It</SheetTitle>
+              </SheetHeader>
+              <SidebarContent />
+            </SheetContent>
+          </Sheet>
+        </div>
+      )}
     </div>
   )
 }

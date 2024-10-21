@@ -19,5 +19,5 @@ export const useLecturesChart = () => {
 
   const randomHexColors = generateRandomHexColors(lecturesQuery.data?.length ?? 0);
   
-  return {currentChart, setCurrentChart, chartViewsData, chartSharedData, randomHexColors}
+  return {currentChart, setCurrentChart, chartViewsData, chartSharedData, randomHexColors};
 }

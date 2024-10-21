@@ -1,8 +1,11 @@
 import { Loader } from "lucide-react";
+import { PropsWithChildren } from "react";
 
-const Spinner = () => {
+const Spinner = ({ children }: PropsWithChildren) => {
   return (
-    <div><Loader className="h-4 w-4 animate-spin" /></div>
+    <div className="flex flex-row gap-2 justify-center items-center">
+      <Loader className="h-4 w-4 animate-spin"/> {children} 
+    </div>
   )
 }
 

@@ -5,7 +5,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
-import { useLecturesChart } from "@/lib/hooks/useLecturesChart";
+import { useLecturesChart } from "@/lib/hooks/use-lectures-chart";
 import { Eye, SquareArrowOutUpRight } from "lucide-react";
 import { Dispatch, PropsWithChildren, SetStateAction } from "react";
 import LecturesBarChart from "./lectures-bar-chart";
@@ -56,12 +56,11 @@ const DashboardLayout = ({ children, currentChart, setCurrentChart }: PropsWithC
           Dashboard
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full lg:min-w-[1024px]">
+      <DialogContent className="w-full lg:min-w-[1024px]" aria-describedby="Lectures Dashboard">
         <DialogHeader>
           <DialogTitle className="text-center text-sm text-muted-foreground">
             Lecture Dashboard
           </DialogTitle>
-
         </DialogHeader>
         <span className="text-lg text-center">{currentChart}</span>
         <div className="flex flex-col lg:flex-row items-center">

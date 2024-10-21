@@ -2,24 +2,25 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuthContext } from "@/contexts/auth-context";
-import { toast } from "@/lib/hooks/use-toast";
+import { useLoginMutation, useRegisterMutation } from "@/lib/mutations";
 import { RegisterFormValues, registerSchema } from "@/lib/schemas/register-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import { isAxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const defaultValues: RegisterFormValues = {
-  email: "admin1@admin.com",
+  email: "xibiu@gmail.com",
+  username: "xibiu",
   password: "1234",
-  confirmPassword: "",
-  username: "xibiu"
+  confirmPassword: "1234",
 };
 
 const RegisterForm = () => {
-  const { registerMutation, registerUser } = useAuthContext();
-  const { error, isPending } = registerMutation;
+  const { loginUser } = useAuthContext();
+  const registerMutation = useRegisterMutation();
+  const loginMutation = useLoginMutation();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -27,35 +28,32 @@ const RegisterForm = () => {
     mode: "onSubmit"
   });
 
-  useEffect(() => {
-    if (error) {
-      let detail = "Internal Server Error";
-      let title = "Something happened...";
-      if (axios.isAxiosError(error) && error.response) {
-        title = error.response?.data.title;
-        detail = JSON.stringify(error.response?.data, null, 2);
-      }
-      toast({
-        title: title,
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-hidden hover:overflow-auto">
-            <code className="text-white">{detail}</code>
-          </pre>
-        )
-      })
-
-    }
-  }, [error]);
-
   const onSubmit = async (data: RegisterFormValues) => {
-    const user = await registerUser(data);
-    toast({
-      title: "User registered successfully:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(user, null, 2)}</code>
-        </pre>
-      )
+    registerMutation.mutate(data, {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onSuccess(_data, { email, password, username }, _context) {
+        loginMutation.mutate({ email, password }, {
+          onSuccess: async ({ accessToken }) => {
+            await loginUser(accessToken);
+          }
+        });
+        toast.success(`User ${username} registered successfully...`);
+      },
+      onError(error) {
+        if (isAxiosError(error)) {
+          console.log(error);
+          const serverError = error.response?.data;
+          form.setError("root", { message: serverError.title });
+
+          if (serverError.errors.email) {
+            form.setError("email", { message: serverError.errors.email })
+          }
+
+          if (serverError.errors.username) {
+            form.setError("username", { message: serverError.errors.username })
+          }
+        }
+      },
     })
   }
 
@@ -123,9 +121,9 @@ const RegisterForm = () => {
           <Button
             type="submit"
             className='border border-primary rounded-none w-full'
-            disabled={isPending}
+            disabled={registerMutation.isPending}
           >
-            {isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : (
+            {registerMutation.isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : (
               "Register"
             )}
           </Button>

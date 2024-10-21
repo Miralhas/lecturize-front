@@ -5,23 +5,15 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const fetchLectures = async (): Promise<Lecture[]> => {
-  const response = await fetch(`${BASE_URL}/lectures`);
-  const lectures: Lecture[] = await response.json();
-  return lectures;
+  const response = await axios.get<Lecture[]>(`${BASE_URL}/lectures`);
+  return response.data;
 };
 
 export const postLecture = async (lecture: LectureFormValues): Promise<Lecture> => {
-  const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("Authorization", `Bearer ${localStorage.getItem("accessToken")}`);
-
-  const response = await fetch(`${BASE_URL}/lectures`, {
-    method: "POST",
-    headers: myHeaders,
-    body: JSON.stringify(lecture),
+  const response = await axios.post<Lecture>(`${BASE_URL}/lectures`, lecture, {
+    headers: {"Authorization": `Bearer ${localStorage.getItem("accessToken")}`}
   });
-
-  return await response.json();
+  return response.data;
 };
 
 export const putLectureImage = async (file: File, id: number) => {

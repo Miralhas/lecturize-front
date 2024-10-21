@@ -2,16 +2,16 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useLectureImageMutation, useLecturesMutation } from "@/lib/mutations";
-import { toast } from "@/lib/hooks/use-toast";
 import { LectureFormValues, lectureSchema } from "@/lib/schemas/lecture-schema";
+import { Tag } from "@/types/tag";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isAxiosError } from "axios";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import TagsDrawer from "./tags-drawer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
-import { Tag } from "@/types/tag";
 
 const defaultValues: LectureFormValues = {
   title: 'abc',
@@ -41,31 +41,31 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
     mode: "onSubmit"
   });
 
+  const { errors } = form.formState;
+
   const watchType = form.watch("type");
 
   const onSubmit = async (data: LectureFormValues) => {
     const image = data.image;
     const formattedData = {
       ...data,
-      startsAt: new Date(data.startsAt).toISOString(),
-      endsAt: new Date(data.endsAt).toISOString(),
+      startsAt: "",//new Date(data.startsAt).toISOString(),
+      endsAt:  "",//new Date(data.endsAt).toISOString(),
       tags: selectedTags,
       image: undefined
     };
     lectureMutate.mutate(formattedData, {
-      onSuccess: async (lecture) => {
+      onSuccess: (lecture) => {
         if (image) {
           lectureImageMutation.mutate({ file: image, id: lecture.id });
         }
         handleTabChange();
-        toast({
-          title: "You received the following token:",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">{JSON.stringify(lecture, null, 2)}</code>
-            </pre>
-          )
-        })
+      },
+      onError: (error) => {
+        if (isAxiosError(error)) {
+          const serverError = error.response?.data;
+          form.setError("root", { message: serverError.detail });
+        }
       }
     });
   }
@@ -74,6 +74,9 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
     <div className="space-y-1">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          {errors.root && (
+            <FormMessage className="text-sm text-center"> {errors.root.message} </FormMessage>
+          )}
           <div className="grid w-full grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -126,7 +129,12 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
                 <FormItem>
                   <FormLabel>Starts At</FormLabel>
                   <FormControl>
-                    <Input type="datetime-local" {...field} min={format(new Date(), 'yyyy-MM-dd\'T\'HH:mm')} />
+                    <Input 
+                      className="flex flex-col justify-center dark:[color-scheme:dark]" 
+                      min={format(new Date(), 'yyyy-MM-dd\'T\'HH:mm')} 
+                      type="datetime-local" 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,7 +149,12 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
                   <FormItem>
                     <FormLabel>Ends At</FormLabel>
                     <FormControl>
-                      <Input type="datetime-local" {...field} min={format(new Date(), 'yyyy-MM-dd\'T\'HH:mm')} />
+                      <Input 
+                        min={format(new Date(), 'yyyy-MM-dd\'T\'HH:mm')} 
+                        className="flex flex-col justify-center dark:[color-scheme:dark]" 
+                        type="datetime-local" 
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -246,8 +259,7 @@ const LectureForm = ({ handleTabChange }: LectureFormProps) => {
           <div className="w-full mx-auto max-w-sm">
             <TagsDrawer selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
           </div>
-          <Button type="submit" disabled={lectureMutate.isPending}>Submit</Button>
-
+          <Button type="submit" disabled={lectureMutate.isPending || lectureImageMutation.isPending}>Submit</Button>
         </form>
       </Form>
     </div>

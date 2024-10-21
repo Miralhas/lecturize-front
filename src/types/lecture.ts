@@ -1,7 +1,7 @@
 import { LectureFormValues } from "@/lib/schemas/lecture-schema";
 
 type AdditionalLectureFields = {
-  tags: string[] | { id: number }[];
+  tags: string[] | { id: number, name: string }[];
   id: number;
   imageUrl: string;
   metrics: {
